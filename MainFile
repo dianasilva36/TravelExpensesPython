@@ -1,0 +1,224 @@
+#Travel Expenses
+
+def main():
+  #input the total number of days spent on the trip
+  num_days = int(input('Enter the number of days spent on the trip: '))
+
+  #Validation loop to terminate program if number of days equals zero
+  while num_days != 0:
+    #input the departure time on the first day of the trip
+    print('\nTime of departure on the first day of the trip')
+    departure_time = float(input('Please use format hh.mm: '))
+    #input the arrival time on the last day of the trip
+    print('\nTime of arrival on the last day of the trip')
+    arrival_time = float(input('Please use format hh.mm: '))
+
+    #call all the functions
+    airfare = airfare_func()
+    car = car_func(num_days)
+    etaxi, otaxy, ttaxi = taxi_func(num_days) #etaxi = employer//otaxy = employee
+    registration = registration_func()
+    ehotel, ohotel, thotel = hotel_func(num_days) #ehotel = employer//ohotel = employee
+    mealAllowance, mealExpense, mealTotal = meal_func(num_days, departure_time, arrival_time)
+    tTotal, eTotal, oTotal = total_func(airfare, car, etaxi, otaxy, ttaxi, registration, ehotel, ohotel, thotel, mealAllowance, mealExpense, mealTotal)
+    display_results(airfare, car, etaxi, otaxy, ttaxi, registration, ehotel, ohotel, thotel, mealAllowance, mealExpense, mealTotal,tTotal, eTotal, oTotal)
+
+    #Terminates program//prevent infinte loop
+    num_days = 0
+
+#variables to be used during car_func to be able to display results of parking_func
+eparking = "global" #employer
+oparking = "global" #employee
+tparking = "global" #total
+
+def airfare_func():
+  air_cost = float(input('\nEnter the cost of airfare: $'))
+  while air_cost <=0:
+    print('ERROR! Airfare cost cannot be zero or less.')
+    air_cost = float(input('Enter the cost of airfare: $'))
+  return air_cost
+
+def car_func(num_days):
+  global eparking
+  global oparking
+  global tparking
+  print('\nWhat type of transportation was used?')
+  ctype = input('Enter R for Rental, P for Private Car, or N for ' +
+                'No Transportation: ')
+  if ctype == 'R' or ctype == 'r':
+    car_cost = float(input('Enter the cost of the Rental: $'))
+    eparking, oparking, tparking = parking_func(num_days)
+    while car_cost <=0:
+      print('Error! Rental cost cannot be zero or less.')
+      car_cost = float(input('Enter the cost of the Car Rental: $'))
+    return car_cost
+  elif ctype == 'P' or ctype == 'p':
+    miles = float(input('Enter the amount of miles driven: '))
+    eparking, oparking, tparking = parking_func(num_days)
+    while miles <=0:
+      print('ERROR! Amount of miles cannot be zero or less.')
+      miles = float(input('Enter the amount of miles driven: '))
+    car_cost = miles * 0.27
+    return car_cost
+  else:
+    print('No transportation used.')
+
+def parking_func(num_days):
+  Uparking = input('\nOut-of-pocket Parking fees? Enter Y for yes, or N for no:')
+  if Uparking == 'Y' or Uparking == 'y':
+    pfees = float(input('Enter the cost of parking fees: $'))
+    while pfees <=0:
+      print('ERROR! Parking fees cannot be zero or less.')
+      pfees = float(input('Enter the cost of parking fees: $'))
+    allowance = num_days * 6
+    if pfees > allowance:
+      pexpense = pfees - allowance
+      ptotal = pfees + allowance
+    else:
+      ptotal = 0
+    return allowance, pexpense, ptotal
+  else:
+    allowance = 0
+    pexpense = 0
+    ptotal = 0
+    return allowance, pexpense, ptotal
+
+def taxi_func(num_days):
+  Utaxi = input('\nOut-of-pocket Taxi fees? Enter Y for yes, or N for no:')
+  if Utaxi == 'Y' or Utaxi == 'y':
+    tfees = float(input('Enter the cost of Taxi fees: $'))
+    while tfees <=0:
+      print('ERROR! Taxi fees cannot be zero or less.')
+      tfees = float(input('Enter the cost of parking fees: $'))
+    allowance = num_days * 10
+    if tfees > allowance:
+      texpense = tfees - allowance
+      ttotal = tfees + allowance
+    else:
+      texpense = 0
+      ttotal = allowance
+    return allowance, texpense, ttotal
+  else:
+    allowance = 0
+    texpense = 0
+    ttotal = 0
+    return allowance, texpense, ttotal
+
+def registration_func():
+  Uregistration = input('\nOut-of-pocket Conference or Seminar Registration fees?' + 
+                      'Enter Y for yes, or N for no:')
+  if Uregistration == 'Y' or Uregistration == 'y':
+    rfees = float(input('Enter the cost of Registration fees: $'))
+    while rfees <=0:
+      print('ERROR! Registration fees cannot be zero or less.')
+      rfees = float(input('Enter the cost of Registration fees: $'))
+    return rfees
+  else:
+    rfees = 0
+    return rfees
+
+def hotel_func(num_days):
+  Uhotel = input('\nOut-of-Pocket Lodging fees? Enter Y for yes, or N for no:')
+  if Uhotel == 'Y' or Uhotel == 'y':
+    hfees = float(input('Enter the cost of Lodging fees: $'))
+    while hfees <=0:
+      print('ERROR! Lodging fees cannot be zero or less.')
+      hfees = float(input('Enter the cost of Lodging fees: $'))
+    allowance = num_days * 90
+    if hfees > allowance:
+      hexpense = hfees - allowance
+      htotal = hfees + allowance
+    else:
+      hexpense = 0
+      htotal = 0
+    return allowance, hexpense, htotal
+  else:
+    allowance = 0
+    hexpense = 0
+    htotal = 0
+    return allowance, hexpense, htotal
+
+def meal_func(num_days, departure_time, arrival_time):
+  bcost = float(input('\nEnter the total cost of breakfast: $'))
+  if departure_time <= 00.00 and arrival_time >= 08.00:
+    ballowance = num_days * 9
+    bexpense = bcost - ballowance
+    btotal = bcost + ballowance
+  elif departure_time >= 12.00 and arrival_time >= 08.00:
+    ballowance = (num_days - 1) * 9
+    bexpense = bcost - ballowance
+    btotal =  bcost + ballowance
+  else:
+    ballowance = (num_days - 2) * 9
+    bexpense = bcost - ballowance
+    btotal = bcost + ballowance
+
+  lcost = float(input('\nEnter the total cost of lunch: $'))
+  if departure_time <= 12.00 and arrival_time >= 13.00:
+    lallowance = num_days * 12
+    lexpense = lcost - lallowance
+    ltotal = lcost + lallowance
+  elif departure_time >= 18.00 and arrival_time >= 19.00:
+    lallowance = (num_days - 1) * 12
+    lexpense = lcost - lallowance
+    ltotal =  lcost + lallowance
+  else:
+    lallowance = (num_days - 2) * 12
+    lexpense = lcost - lallowance
+    ltotal = lcost + lallowance
+
+  dcost = float(input('\nEnter the total cost of dinner: $'))
+  if departure_time <= 18.00 and arrival_time >= 19.00:
+    dallowance = num_days * 16
+    dexpense = dcost - dallowance
+    dtotal = dcost + dallowance
+  elif departure_time >= 18.01 and arrival_time >= 19.00:
+    dallowance = (num_days - 1) * 16
+    dexpense = dcost - dallowance
+    dtotal =  dcost + dallowance
+  else:
+    dallowance = (num_days - 2) * 16
+    dexpense = dcost - dallowance
+    dtotal = dcost + dallowance
+
+  mAllowance = ballowance + lallowance + dallowance
+  mExpense = bexpense + lexpense + dexpense
+  mTotal = btotal + ltotal + dtotal
+
+  return mAllowance, mExpense, mTotal
+
+def total_func(airfare, car, etaxi, otaxy, ttaxi, registration, ehotel, ohotel, thotel, mealAllowance, mealExpense, mealTotal):
+  travel_total = airfare + car + ttaxi + registration + thotel + mealTotal
+  company_total = airfare + car + eparking + etaxi + registration + ehotel + mealAllowance
+  outOfPocket_total = oparking + otaxy + ohotel + mealExpense
+  return travel_total, company_total, outOfPocket_total
+
+def display_results(airfare, car, etaxi, otaxy, ttaxi, registration, ehotel, ohotel, thotel, mealAllowance, mealExpense, mealTotal,tTotal, eTotal, oTotal):
+  print('\nTravel Expenses:')
+  print('Airfare cost: $', format(airfare, '.2f'))
+  print('Transportation cost: $', format(car, '.2f'))
+  print('Parking fees: $', format(tparking, '.2f'))
+  print('Taxi fees: $', format(ttaxi, '.2f'))
+  print('Registration fees: $', format(registration, '.2f'))
+  print('Lodging cost: $', format(thotel, '.2f'))
+  print('Meals cost: $', format(mealTotal, '.2f'))
+  print('Total travel expenses: ', format(tTotal, '.2f'))
+
+  print('\nCompany Reimbursements: ')
+  print('Airfare cost: $', format(airfare, '.2f'))
+  print('Transportation cost: $', format(car, '.2f'))
+  print('Parking fees: $', format(eparking, '.2f'))
+  print('Taxi fees: $', format(etaxi, '.2f'))
+  print('Registration fees: $', format(registration, '.2f'))
+  print('Lodging cost: $', format(ehotel, '.2f'))
+  print('Meals cost: $', format(mealAllowance, '.2f'))
+  print('Total reimbursements: ', format(eTotal, '.2f'))
+
+  print('\nEmployee Out-of-Pocket Expenses:')
+  print('Parking fees: $', format(oparking, '.2f'))
+  print('Taxi fees: $', format(otaxy, '.2f'))
+  print('Logdging cost: $', format(ohotel, '.2f'))
+  print('Meals cost: $', format(mealExpense, '.2f'))
+  print('Total out-of-pocket expenses: ', format(oTotal, '.2f'))
+
+main()
